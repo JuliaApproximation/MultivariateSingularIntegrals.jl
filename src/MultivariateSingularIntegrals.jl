@@ -128,7 +128,7 @@ function rec_rhs_2!(F::AbstractMatrix{T}, z) where T
 end
 
 
-function logkernelsquare_populatefirstcolumn!(A, z, F_1=rec_rhs_1(z, size(A)...), F_2=rec_rhs_2(z, size(A)...))
+function logkernelsquare_populatefirstcolumn!(A, z, F_1, F_2)
     A[2,1] = z * A[1,1]/3 + (F_2[1,1] - 2F_1[1,1])/3
     for k = 1:size(A,1)-2
         A[k+2,1] = (2k+1) * z * A[k+1,1]/(k+3) - (k-2)*A[k,1]/(k+3) + (2k+1) * (F_2[k+1,1] - 2F_1[k+1,1])/(k+3)
@@ -136,7 +136,7 @@ function logkernelsquare_populatefirstcolumn!(A, z, F_1=rec_rhs_1(z, size(A)...)
     A
 end
 
-function logkernelsquare_populatefirstrow!(A, z, F_1=rec_rhs_1(z, size(A)...), F_2=rec_rhs_2(z, size(A)...))
+function logkernelsquare_populatefirstrow!(A, z, F_1, F_2)
     A[1,2] = z*A[1,1]/(3im) + (F_1[1,1]-2F_2[1,1])/(3im)
     for j = 1:size(A,2)-2
         A[1,j+2] = -im * (2j+1) * z * A[1,j+1]/(j+3) - (j-2)*A[1,j]/(j+3) - im * (2j+1) * (F_1[1,j+1] - 2F_2[1,j+1])/(j+3)
