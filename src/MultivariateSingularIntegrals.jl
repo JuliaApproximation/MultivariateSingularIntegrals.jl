@@ -74,10 +74,10 @@ function rec_rhs_1!(F::AbstractMatrix{T}, z) where T
     πT = convert(T, π)
     if x < -1 && -1 < y < 1
         C_y = Ultraspherical{T}(-1/2)[y,2:n+1]
-        F[1,:] .-=  (4im*πT * x) .* C_y
+        F[1,:] .=  (-4im*πT * x) .* C_y
     elseif x < 1 && -1 < y < 1
         C_y = Ultraspherical{T}(-1/2)[y,2:n+1]
-        F[1,:] .-=  (2im*πT * (x-1)) .* C_y
+        F[1,:] .=  (-2im*πT * (x-1)) .* C_y
     end
 
     F[1,1] += zlog(z-1-im) + zlogm(z-1+im) + zlog(z+1-im) + zlogm(z+1+im)
@@ -103,16 +103,16 @@ function rec_rhs_2!(F::AbstractMatrix{T}, z) where T
     if -1 < x < 1 && -1 ≤ y < 1
         C_x = Ultraspherical{T}(-3/2)[x,3:m+2]
         C_y = Ultraspherical{T}(-1/2)[y,2:n+1]
-        F = (2im*πT) .* (C_x .* C_y') ./ 3
+        F .= (2im*πT) .* (C_x .* C_y') ./ 3
         F[1,:] .-= (2im*πT) .* x .* C_y
         F[2,:] .+= (2im*πT/3) .* C_y
     elseif x ≤ -1 && -1 ≤ y < 1
-        F = zeros(T,m,n)
+        fill!(F, zero(T))
         C_y = Ultraspherical{T}(-1/2)[y,2:n+1]
         F[1,:] .= (-4im*πT) .* x .* C_y
         F[2,:] .= (4im*πT/3) .*  C_y
     else
-        F = zeros(T,m,n)
+        fill!(F, zero(T))
     end
 
     L₋ = complexlogkernel(Legendre{T}(), z-im)[1:m+1]
@@ -167,8 +167,8 @@ function logkernelsquare!(A::AbstractMatrix{T}, z, F_1, F_2) where T
     logkernelsquare_populatefirstcolumn!(A, z, F_1, F_2)
     logkernelsquare_populatefirstrow!(A, z, F_1, F_2)
 
-    F = F_1 # reuse the memory
-    F .= F_2 .- F_1
+    # F = F_1 # reuse the memory
+    F = F_2 .- F_1
 
     # 2nd row/column
 

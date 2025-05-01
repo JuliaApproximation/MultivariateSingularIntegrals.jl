@@ -6,7 +6,6 @@ using MultivariateSingularIntegrals, QuadGK, ClassicalOrthogonalPolynomials, Tes
     for z in Z
         L = logkernelsquare(z,n)
         for j = 0:n-1, k=0:n-j-1
-            @show k,j
             q = quadgk(s -> quadgk(t -> iszero(s+im*t) ? 0.0+0.0im : log(z-(s+im*t)) * legendrep(k,s) * legendrep(j,t), -1, 1, atol=1E-12)[1], -1, 1, atol=1E-12)[1]
             @test q ≈ L[k+1,j+1] atol=1E-10
         end
@@ -24,8 +23,8 @@ end
     end
 end
 
-n = 4000
-z = 2.0
-@profview logkernelsquare(z, n)
+# n = 4000
+# z = 2.0
+# @profview logkernelsquare(z, n)
 
-x = range(-1,1,n); @time log.(abs.(x .+ im .* x'));
+# x = range(-1,1,n); @time log.(abs.(x .+ im .* x'));
