@@ -68,11 +68,10 @@ end
 
 
 
-function rec_rhs_1(z, m, n)
+function rec_rhs_1!(F::AbstractMatrix{T}, z) where T
+    m,n = size(F)
     x,y = reim(z)
-    T= complex(float(typeof(z)))
     πT = convert(T, π)
-    F = zeros(T,m,n)
     if x < -1 && -1 < y < 1
         C_y = Ultraspherical{T}(-1/2)[y,2:n+1]
         F[1,:] .-=  (4im*πT * x) .* C_y
@@ -97,9 +96,9 @@ end
 
 
 
-function rec_rhs_2(z, m, n)
+function rec_rhs_2!(F::AbstractMatrix{T}, z) where T
+    m,n = size(F)
     x,y = reim(z)
-    T= T= complex(float(typeof(z)))
     πT = convert(T, π)
     if -1 < x < 1 && -1 ≤ y < 1
         C_x = Ultraspherical{T}(-3/2)[x,3:m+2]
@@ -154,17 +153,26 @@ The bottom right of the returned matrix is zero. For a square truncation compute
 """
 
 function logkernelsquare(z, n)
-    F_1 = rec_rhs_1(z, n, n)
-    F_2 = rec_rhs_2(z, n, n)
-    A = zeros(complex(float(eltype(z))),n,n)
+    T = complex(float(eltype(z)))
+    logkernelsquare!(zeros(T,n,n), z, zeros(T,n,n), zeros(T,n,n))
+end
+
+
+function logkernelsquare!(A::AbstractMatrix{T}, z, F_1, F_2) where T
+    m,n = size(A)
+    @assert m  == n
+    rec_rhs_1!(F_1, z)
+    rec_rhs_2!(F_2, z)
     A[1,1] = L₀₀(z)
     logkernelsquare_populatefirstcolumn!(A, z, F_1, F_2)
     logkernelsquare_populatefirstrow!(A, z, F_1, F_2)
-    F = F_2 - F_1
+
+    F = F_1 # reuse the memory
+    F .= F_2 .- F_1
 
     # 2nd row/column
 
-    for k = 1:n-2
+    for k = 1:m-2
         A[k+1,2] = im*(F[k+1,1] + (A[k,1] - A[k+2,1])/(2k+1))
     end
 
