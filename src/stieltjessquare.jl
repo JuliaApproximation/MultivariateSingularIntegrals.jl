@@ -10,17 +10,18 @@ function stieltjessquare(z, n)
     stieltjessquare!(zeros(T,n,n), z)
 end
 
-function stieltjessquare_populatefirstcolumn!(A, z)
+function stieltjessquare_populatefirstrow!(A, z)
+    n = size(A,2)
     M_p = imlogkernel_vec(n, z+1)
     M_m = imlogkernel_vec(n, z-1)
-    A[:,1] .= M_p .- M_m
+    A[1,:] .= M_p .- M_m
 end
 
-function stieltjessquare_populatefirstrow!(A, z)
-    M_p = imlogkernel_vec(n, 1-im*z)
-    M_m = imlogkernel_vec(n, -1-im*z)
-    m = size(A,1)
-    A[1,:] .= (-1) .^ (1:m) .* im .* (M_p .- M_m)
+function stieltjessquare_populatefirstcolumn!(A, z)
+    m = size(A,2)
+    M_p = imlogkernel_vec(m, 1-im*z)
+    M_m = imlogkernel_vec(m, -1-im*z)
+    A[:,1] .= (-1) .^ (1:m) .* im .* (M_p .- M_m)
 end
 
 
@@ -28,8 +29,8 @@ function stieltjessquare!(A::AbstractMatrix{T}, z) where T
     m,n = size(A)
     @assert m  == n
 
-    stieltjessquare_populatefirstcolumn!(A, z, F_1, F_2)
-    stieltjessquare_populatefirstrow!(A, z, F_1, F_2)
+    stieltjessquare_populatefirstcolumn!(A, z)
+    stieltjessquare_populatefirstrow!(A, z)
 
     # 2nd row/column
     for k = 1:m-2
@@ -37,15 +38,15 @@ function stieltjessquare!(A::AbstractMatrix{T}, z) where T
     end
 
     for j = 2:n-2
-        A[2,j+1] = z*A[1,j+1] - im*(j*A[1,j]/(2j+1) + (j+1)*A[1,k+2]/(2j+1))
+        A[2,j+1] = z*A[1,j+1] - im*(j*A[1,j]/(2j+1) + (j+1)*A[1,j+2]/(2j+1))
     end
     # remaining
     for ℓ = 1:((n-1)÷2-1)
         for k = ℓ+1:n-(ℓ+2)
-            A[k+1,ℓ+2] = (im*(2ℓ+1)*(k*A[k,ℓ+1]/(2k+1)  + (k+1)*A[k+2,ℓ+1]/(2k+1) - z*A[k+1,ℓ+1]) - j*A[k+1,ℓ+1])/(ℓ+1)
+            A[k+1,ℓ+2] =  (-im * (2ℓ+1)* z * A[k+1,ℓ+1]  + im*(2ℓ+1)*(k*A[k,ℓ+1] + (k+1)*A[k+2,ℓ+1])/(2k+1) - ℓ*A[k+1,ℓ])/(ℓ+1)
         end
         for j = ℓ+2:n-(ℓ+2)
-            A[ℓ+2,j+1] = (z*(2k+1)*A[ℓ+1,j+1] - im*(2k+1)*(j*A[ℓ+1,j]/(2j+1) + (j+1)*A[ℓ+1,k+2]/(2j+1)) - k*A[k,ℓ+1])/(k+1)
+            A[ℓ+2,j+1] = (z*(2ℓ+1)*A[ℓ+1,j+1] - im*(2ℓ+1)*(j*A[ℓ+1,j] + (j+1)*A[ℓ+1,j+2])/(2j+1) - ℓ*A[ℓ,j+1])/(ℓ+1)
         end
     end
     A
