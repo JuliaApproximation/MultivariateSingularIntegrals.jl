@@ -1,4 +1,4 @@
-using MultivariateSingularIntegrals, QuadGK, ClassicalOrthogonalPolynomials, Test
+using MultivariateSingularIntegrals, QuadGK, ClassicalOrthogonalPolynomials, LinearAlgebra, Test
 
 Z = (2, 2im, 2+2im, 2-2im, -2 - 2im, -1.001-1.5im, -0.999-1.5im, -0.5-2im, -1-1.5im, -2+2im, -2, 0.1+0.2im, 0.1+im, 0.1-im, 1+0.1im, -1+0.1im, 1+im, -1+im, -1-im, 1-im)
 @testset "stieltjes" begin
