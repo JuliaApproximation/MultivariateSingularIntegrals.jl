@@ -41,7 +41,7 @@ end
 
     @testset "BigFloat" begin
         setprecision(2000) do
-            for z in (big(2.0), big(2.0im), big(2.0+2im), big(2.0-2im), big(-2.0 - 2im))
+            for z in big.(Z̃)
                 P = Legendre{BigFloat}()
                 n = 100
                 M = Diagonal((P'P)[1:n,1:n])

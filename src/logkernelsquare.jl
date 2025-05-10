@@ -156,8 +156,8 @@ function logkernelsquare!(A::AbstractMatrix{T}, z, F_1, F_2) where T
     logkernelsquare_populatefirstcolumn!(A, z, F_1, F_2)
     logkernelsquare_populatefirstrow!(A, z, F_1, F_2)
 
-    # F = F_1 # reuse the memory
-    F = F_2 .- F_1
+    F = F_1 # reuse the memory
+    F .= F_2 .- F_1
 
     # 2nd row/column
 
