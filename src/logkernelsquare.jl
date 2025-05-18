@@ -169,7 +169,7 @@ function logkernelsquare!(A::AbstractMatrix{T}, z, F_1, F_2) where T
         A[2,j+1] = F[1,j+1] + im*(A[1,j+2] - A[1,j])/(2j+1)
     end
 
-    for ℓ = 1:((n-1)÷2-1)
+    @inbounds for ℓ = 1:((n-1)÷2-1)
         for k = ℓ+1:n-(ℓ+2)
             A[k+1,ℓ+2] = (2ℓ+1)*im*(F[k+1,ℓ+1] + (A[k,ℓ+1] - A[k+2,ℓ+1])/(2k+1)) + A[k+1,ℓ]
         end
