@@ -34,7 +34,7 @@ function m_const(k, z)
 end
 
 M0(z) = L0(-im*float(z)) + m_const(0, float(z))
-M1(z, r0=L0(-im*z)) = L1(-im*float(z), r0) + m_const(1, float(z))
+M1(z, r0=L0(-im*float(z))) = L1(-im*float(z), r0) + m_const(1, float(z))
 
 
 """
