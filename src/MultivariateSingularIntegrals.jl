@@ -2,7 +2,7 @@ module MultivariateSingularIntegrals
 using LinearAlgebra, ClassicalOrthogonalPolynomials, SingularIntegrals, FillArrays
 import Base: size
 
-export logkernelsquare, stieltjessquare
+export logkernelsquare, stieltjessquare, logkernelsquare!, stieltjessquare!
 
 
 function imlogkernel_vec(n, z)
