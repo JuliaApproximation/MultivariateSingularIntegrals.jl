@@ -1,4 +1,4 @@
-using MultivariateSingularIntegrals, QuadGK, ClassicalOrthogonalPolynomials, LinearAlgebra, Test
+using MultivariateSingularIntegrals, QuadGK, ClassicalOrthogonalPolynomials, LinearAlgebra, DoubleFloats, Test
 
 
 Z̃ = (2.0, 2.0im, 2.0+2im, 2.0-2im, -2.0 - 2im)
@@ -47,6 +47,8 @@ end
                 M = Diagonal((P'P)[1:n,1:n])
                 @test P[big(0.), 1:n]' *  inv(M)  * logkernelsquare(z, n) * inv(M) * P[big(0.), 1:n] ≈ log(z) atol=1E-40
             end
+
+            @test logkernelsquare(Double64(0) + 0im, 10) ≈ logkernelsquare(big(0.0) + 0im, 10) atol=1E-30
         end
     end
 end
