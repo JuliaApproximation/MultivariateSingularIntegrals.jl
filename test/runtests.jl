@@ -57,6 +57,10 @@ end
     end
 end
 
+@testset "newtonian" begin
+    @test newtoniansquare(0.1+0.2im, 10) == newtoniansquare([0.1,0.2], 10) == real(logkernelsquare(0.1+0.2im, 10))
+end
+
 # n = 4000
 # z = 2.0
 # @profview logkernelsquare(z, n)
