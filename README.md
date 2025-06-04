@@ -5,20 +5,20 @@
 The function `newtoniansquare([x,y], p)` computes a matrix of  Newtonian potentials of Legendre polynomials on the unit square $Ω := [-1,1]^2$. That is it computes
 ```math
 \begin{pmatrix}
-L_{11}(𝐱) & \cdots & L_{1,p-1}(𝐱) & L_{1p}(𝐱) \\
-L_{21}(𝐱) & \cdots & L_{2,p-1}(𝐱) \\
-\vdots & \iddots \\
+L_{11}(𝐱) & ⋯ & L_{1,p-1}(𝐱) & L_{1p}(𝐱) \\
+L_{21}(𝐱) & ⋯ & L_{2,p-1}(𝐱) \\
+⋮ & ⋰ \\
 L_{p1}(𝐱)
 \end{pmatrix}
 ```
 where $𝐱 = [x,y]$ is any point in $ℝ²$ (including on or near the unit square $Ω$) and 
 ```math
-L_{k,j}(𝐱) := ∬_Ω P_{k-1}(s) P_{j-1}(t) \log(\| [s,t] - [x,y] \|) \, ds \, dt
+L_{k,j}(𝐱) := ∬_Ω P_{k-1}(s) P_{j-1}(t) \log(\| [s,t] - 𝐱 \|) \, ds \, dt
 ```
 where $P_k$ and $P_j$ are the Legendre polynomials of degree $k$ and $j$, respectively.
 
 
-Here we show an example of how to use the package for computing the Newtonian potential for $f(x,y) = \cos(x*\exp(y))$,
+Here we show an example of how to use the package for computing the Newtonian potential for $f(x,y) = \cos(x \exp(y))$,
 which is faster than QuadGK.jl:
 ```julia
 julia> using MultivariateSingularIntegrals, ClassicalOrthogonalPolynomials, LinearAlgebra, QuadGK
