@@ -121,7 +121,7 @@ function rec_rhs_2!(F::AbstractMatrix{T}, z, γ=one(real(T))) where T
 end
 
 
-function logkernelsquare_populatefirstcolumn!(A, z, F_1, F_2, γ=1)
+function logkernelrectangle_populatefirstcolumn!(A, z, F_1, F_2, γ=1)
     A[2,1] = z * A[1,1]/(3γ) + (F_2[1,1] - 2F_1[1,1])/(3γ)
     for k = 1:size(A,1)-2
         A[k+2,1] = (2k+1) * z * A[k+1,1]/((k+3)γ) - (k-2)*A[k,1]/(k+3) + (2k+1) * (F_2[k+1,1] - 2F_1[k+1,1])/((k+3)γ)
@@ -129,7 +129,7 @@ function logkernelsquare_populatefirstcolumn!(A, z, F_1, F_2, γ=1)
     A
 end
 
-function logkernelsquare_populatefirstrow!(A, z, F_1, F_2)
+function logkernelrectangle_populatefirstrow!(A, z, F_1, F_2)
     A[1,2] = z*A[1,1]/(3im) + (F_1[1,1]-2F_2[1,1])/(3im)
     for j = 1:size(A,2)-2
         A[1,j+2] = -im * (2j+1) * z * A[1,j+1]/(j+3) - (j-2)*A[1,j]/(j+3) - im * (2j+1) * (F_1[1,j+1] - 2F_2[1,j+1])/(j+3)
@@ -139,31 +139,19 @@ end
 
 
 """
-    logkernelsquare(z, n)
-
-computes the matrix with entries ``∫_{-1}^1∫_{-1}^1 log(z-(s+im*t))P_k(s)P_j(t)dsdt`` up to total degree ``n``.
-The bottom right of the returned matrix is zero. For a square truncation compute `logkernelsquare(z,2n-1)[1:n,1:n]`.
-"""
-function logkernelsquare(z, n)
-    T = complex(float(eltype(z)))
-    logkernelsquare!(zeros(T,n,n), z, zeros(T,n,n), zeros(T,n,n))
-end
-
-logkernelsquare!(A::AbstractMatrix{T}, z, F_1, F_2) where T = logkernelrectangle!(A, z, one(real(T)), F_1, F_2)
-
-"""
-    logkernelrectangle(z, γ, n)
+    logkernelrectangle(z, n, γ=1)
 
 computes the matrix with entries ``∫_{-γ}^γ∫_{-1}^1 log(z-(s+im*t))P_k(s/γ)P_j(t)dtds`` up to total degree ``n``.
-The bottom right of the returned matrix is zero. For a square truncation compute `logkernelrectangle(z,γ,2n-1)[1:n,1:n]`.
+The default `γ = 1` corresponds to the unit square.
+The bottom right of the returned matrix is zero. For a square truncation compute `logkernelrectangle(z,2n-1,γ)[1:n,1:n]`.
 """
-function logkernelrectangle(z, γ, n)
+function logkernelrectangle(z, n, γ=1)
     T = complex(float(promote_type(eltype(z), typeof(γ))))
-    logkernelrectangle!(zeros(T,n,n), z, γ, zeros(T,n,n), zeros(T,n,n))
+    logkernelrectangle!(zeros(T,n,n), z, zeros(T,n,n), zeros(T,n,n), γ)
 end
 
 
-function logkernelrectangle!(A::AbstractMatrix{T}, z, γ, F_1, F_2) where T
+function logkernelrectangle!(A::AbstractMatrix{T}, z, F_1, F_2, γ=one(real(T))) where T
     m,n = size(A)
     @assert m  == n
     γ = convert(real(T), γ)
@@ -173,8 +161,8 @@ function logkernelrectangle!(A::AbstractMatrix{T}, z, γ, F_1, F_2) where T
     n == 1 && return A
     rec_rhs_1!(F_1, z, γ)
     rec_rhs_2!(F_2, z, γ)
-    logkernelsquare_populatefirstcolumn!(A, z, F_1, F_2, γ)
-    logkernelsquare_populatefirstrow!(A, z, F_1, F_2)
+    logkernelrectangle_populatefirstcolumn!(A, z, F_1, F_2, γ)
+    logkernelrectangle_populatefirstrow!(A, z, F_1, F_2)
 
     F = F_1 # reuse the memory
     F .= F_2 .- F_1
