@@ -1,7 +1,7 @@
 name = "MultivariateSingularIntegrals"
 uuid = "afb3ad05-8577-40d5-8767-20c5aa8ee3cd"
 authors = ["Sheehan Olver <solver@mac.com>"]
-version = "0.1.1"
+version = "0.2.0"
 
 [deps]
 ClassicalOrthogonalPolynomials = "b30e2e7b-c4ee-47da-9d5f-2c5c27239acd"
