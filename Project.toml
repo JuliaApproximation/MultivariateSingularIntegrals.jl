@@ -1,7 +1,7 @@
 name = "MultivariateSingularIntegrals"
 uuid = "afb3ad05-8577-40d5-8767-20c5aa8ee3cd"
 authors = ["Sheehan Olver <solver@mac.com>"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 ClassicalOrthogonalPolynomials = "b30e2e7b-c4ee-47da-9d5f-2c5c27239acd"
@@ -15,7 +15,7 @@ DoubleFloats = "1"
 FillArrays = "1.13.0"
 LinearAlgebra = "1"
 QuadGK = "2.11.2"
-SingularIntegrals = "0.3.8"
+SingularIntegrals = "0.3.8, 0.4"
 Test = "1"
 julia = "1.10"
 
