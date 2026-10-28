@@ -60,5 +60,37 @@ julia> dot(N, C)
 -1.2555132824835833
 ```
 
+General rectangles $(a,b) × (c,d)$ can be handled via an affine change of variables. Writing $h := (d-c)/2$, $γ := (b-a)/(d-c)$
+and $𝐱_0 := [(a+b)/2, (c+d)/2]$ for the centre, the substitution $[s,t] = 𝐱_0 + h [\tilde s, \tilde t]$ maps $[-γ,γ] × [-1,1]$ to the rectangle and gives
+```math
+∬_{(a,b) × (c,d)} f(s,t) \log\| [s,t] - 𝐱 \| \, ds \, dt
+= h^2 \left( ∫_{-1}^1 ∫_{-γ}^γ \tilde f(\tilde s, \tilde t) \log\left\| [\tilde s, \tilde t] - {𝐱 - 𝐱_0 \over h} \right\| d\tilde s \, d\tilde t + \log h ∫_{-1}^1 ∫_{-γ}^γ \tilde f(\tilde s, \tilde t) \, d\tilde s \, d\tilde t \right)
+```
+where $\tilde f(\tilde s, \tilde t) := f(𝐱_0 + h [\tilde s, \tilde t])$. Expanding $\tilde f(\tilde s, \tilde t) = ∑_{k,j} c_{kj} P_k(\tilde s/γ) P_j(\tilde t)$,
+the first integral is computed by `newtonianrectangle` and the second equals $4γ c_{00}$. For example, for the same $f$ on $(0,1) × (0,3)$:
+```julia
+julia> a,b,c,d = 0,1,0,3;
+
+julia> 𝐱 = [0.1, 1.1]; # point inside the rectangle
+
+julia> qgk_approx = quadgk(s -> quadgk(t -> f(s, t) * log(norm(𝐱 - [s,t])), c, 𝐱[2], d)[1], a, 𝐱[1], b)[1]
+-0.4152102599108459
+
+julia> h, γ, 𝐱₀ = (d-c)/2, (b-a)/(d-c), [(a+b)/2, (c+d)/2];
+
+julia> p = 60;
+
+julia> x = ClassicalOrthogonalPolynomials.grid(P, p);
+
+julia> F = f.((a+b)/2 .+ (b-a)/2 .* x, (c+d)/2 .+ (d-c)/2 .* x'); # evaluate f on the mapped grid
+
+julia> C = plan_transform(P, (p, p)) * F; # Legendre coefficients c_kj
+
+julia> N = Float64.(newtonianrectangle(big.((𝐱 - 𝐱₀)/h), p, big(γ)));
+
+julia> @test h^2 * (dot(N, C) + 4γ*log(h)*C[1,1]) ≈ qgk_approx
+Test Passed
+```
+
 The package also supports complex logarithmic integrals with kernel $\log(z-(s+{\rm i}t))$ via `logkernelrectangle`
 and Stieltjes integrals with kernel $1/(z-(s+{\rm i}t))$ via `stieltjessquare`. The real and imaginary parts of Stieltjes integrals containing the gradient of the Newtonian potential.
