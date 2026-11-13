@@ -27,7 +27,7 @@ function m_const(k, z)
             ((1 + y) - 3*(1-y))/2
         end
     elseif -1 ≤ y ≤ 1 && x ≤ 0 && !(x == 0 && !signbit(x) && signbit(y)) # k ≠ 0
-        -Weighted(Jacobi{T}(1,1))[y,k]/k
+        -2Ultraspherical{T}(-1/2)[y,k+2] # = -(1-y^2) * P_{k-1}^{(1,1)}(y)/k, but Jacobi{BigFloat}(1,1) only evaluates to Float64 accuracy
     else
         zero(T)
     end
@@ -50,8 +50,8 @@ function m_const_vec(n, z)
     elseif y ≤ -1
         [-3im*convert(T,π); Zeros{T}(n-1)]
     else # x ≤ 0 && -1 ≤ y ≤ 1
-        r = Weighted(Jacobi{T}(1,1))[y,1:n-1]
-        [((1 + y) - 3*(1-y))/2*im*convert(T,π); -im .* convert(T,π) .* r ./ (1:(n-1))]
+        r = Ultraspherical{T}(-1/2)[y,3:n+1] # = (1-y^2) * P_{k-1}^{(1,1)}(y)/(2k), avoiding Weighted(Jacobi), which loses precision
+        [((1 + y) - 3*(1-y))/2*im*convert(T,π); -2im .* convert(T,π) .* r]
     end
 end
 

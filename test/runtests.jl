@@ -85,6 +85,21 @@ end
             @test logkernelrectangle(Double64(0) + 0im, 10, Double64(1.3)) ≈ logkernelrectangle(big(0.0) + 0im, 10, big(1.3)) atol=1E-28
         end
     end
+
+    @testset "tall rectangle" begin
+        # regression: Float64-accurate constants are amplified by the recurrence, even in BigFloat
+        f = (x,y) -> cos(x * exp(y))
+        a,b,c,d = 0,1,0,3
+        𝐱 = [0.1, 0.2]
+        qgk = quadgk(s -> quadgk(t -> f(s, t) * log(norm(𝐱 - [s,t])), c, 𝐱[2], d)[1], a, 𝐱[1], b)[1]
+        h, γ, 𝐱₀ = (d-c)/2, (b-a)/(d-c), [(a+b)/2, (c+d)/2]
+        P = Legendre()
+        p = 60
+        x = ClassicalOrthogonalPolynomials.grid(P, p)
+        C = plan_transform(P, (p, p)) * f.((a+b)/2 .+ (b-a)/2 .* x, (c+d)/2 .+ (d-c)/2 .* x')
+        N = Float64.(newtonianrectangle(big.((𝐱 - 𝐱₀)/h), p, big(γ)))
+        @test h^2 * (dot(N, C) + 4γ*log(h)*C[1,1]) ≈ qgk atol=1E-12
+    end
 end
 
 @testset "newtonian" begin

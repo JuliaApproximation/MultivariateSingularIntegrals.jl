@@ -2,7 +2,7 @@
  Julia package for computing multivariate singular integrals
 
 
-The function `newtonianrectangle([x,y], p)` computes a matrix of  Newtonian potentials of Legendre polynomials on the unit square $Ω := [-1,1]^2$. That is it computes
+The function `newtonianrectangle([x,y], p)` computes a matrix of  Newtonian potentials of Legendre polynomials on the unit square Ω := [-1,1]². That is it computes
 ```math
 \begin{pmatrix}
 L_{11}(𝐱) & ⋯ & L_{1,p-1}(𝐱) & L_{1p}(𝐱) \\
@@ -11,16 +11,16 @@ L_{21}(𝐱) & ⋯ & L_{2,p-1}(𝐱) \\
 L_{p1}(𝐱)
 \end{pmatrix}
 ```
-where $𝐱 = [x,y]$ is any point in $ℝ²$ (including on or near the unit square $Ω$) and 
+where 𝐱 = [x,y] is any point in ℝ² (including on or near the unit square Ω) and
 ```math
 L_{k,j}(𝐱) := ∬_Ω P_{k-1}(s) P_{j-1}(t) \log(\| [s,t] - 𝐱 \|) \, ds \, dt
 ```
-where $P_k$ and $P_j$ are the Legendre polynomials of degree $k$ and $j$, respectively.
-More generally, `newtonianrectangle([x,y], p, γ)` computes the same quantities on the rectangle $Ω := [-γ,γ] × [-1,1]$
-with $P_{k-1}(s)$ replaced by $P_{k-1}(s/γ)$.
+where Pₖ and Pⱼ are the Legendre polynomials of degree k and j, respectively.
+More generally, `newtonianrectangle([x,y], p, γ)` computes the same quantities on the rectangle Ω := [-γ,γ] × [-1,1]
+with Pₖ₋₁(s) replaced by Pₖ₋₁(s/γ).
 
 
-Here we show an example of how to use the package for computing the Newtonian potential for $f(x,y) = \cos(x \exp(y))$,
+Here we show an example of how to use the package for computing the Newtonian potential for f(x,y) = cos(x exp(y)),
 which is faster than QuadGK.jl:
 ```julia
 julia> using MultivariateSingularIntegrals, ClassicalOrthogonalPolynomials, LinearAlgebra, QuadGK
@@ -60,14 +60,14 @@ julia> dot(N, C)
 -1.2555132824835833
 ```
 
-General rectangles $(a,b) × (c,d)$ can be handled via an affine change of variables. Writing $h := (d-c)/2$, $γ := (b-a)/(d-c)$
-and $𝐱_0 := [(a+b)/2, (c+d)/2]$ for the centre, the substitution $[s,t] = 𝐱_0 + h [\tilde s, \tilde t]$ maps $[-γ,γ] × [-1,1]$ to the rectangle and gives
+General rectangles (a,b) × (c,d) can be handled via an affine change of variables. Writing h := (d-c)/2, γ := (b-a)/(d-c)
+and 𝐱₀ := [(a+b)/2, (c+d)/2] for the centre, the substitution [s,t] = 𝐱₀ + h[s̃,t̃] maps [-γ,γ] × [-1,1] to the rectangle and gives
 ```math
 ∬_{(a,b) × (c,d)} f(s,t) \log\| [s,t] - 𝐱 \| \, ds \, dt
 = h^2 \left( ∫_{-1}^1 ∫_{-γ}^γ \tilde f(\tilde s, \tilde t) \log\left\| [\tilde s, \tilde t] - {𝐱 - 𝐱_0 \over h} \right\| d\tilde s \, d\tilde t + \log h ∫_{-1}^1 ∫_{-γ}^γ \tilde f(\tilde s, \tilde t) \, d\tilde s \, d\tilde t \right)
 ```
-where $\tilde f(\tilde s, \tilde t) := f(𝐱_0 + h [\tilde s, \tilde t])$. Expanding $\tilde f(\tilde s, \tilde t) = ∑_{k,j} c_{kj} P_k(\tilde s/γ) P_j(\tilde t)$,
-the first integral is computed by `newtonianrectangle` and the second equals $4γ c_{00}$. For example, for the same $f$ on $(0,1) × (0,3)$:
+where f̃(s̃,t̃) := f(𝐱₀ + h[s̃,t̃]). Expanding f̃(s̃,t̃) = ∑ₖⱼ cₖⱼ Pₖ(s̃/γ) Pⱼ(t̃),
+the first integral is computed by `newtonianrectangle` and the second equals 4γc₀₀. For example, for the same f on (0,1) × (0,3):
 ```julia
 julia> a,b,c,d = 0,1,0,3;
 
@@ -92,5 +92,5 @@ julia> @test h^2 * (dot(N, C) + 4γ*log(h)*C[1,1]) ≈ qgk_approx
 Test Passed
 ```
 
-The package also supports complex logarithmic integrals with kernel $\log(z-(s+{\rm i}t))$ via `logkernelrectangle`
-and Stieltjes integrals with kernel $1/(z-(s+{\rm i}t))$ via `stieltjessquare`. The real and imaginary parts of Stieltjes integrals containing the gradient of the Newtonian potential.
+The package also supports complex logarithmic integrals with kernel log(z - (s + it)) via `logkernelrectangle`
+and Stieltjes integrals with kernel 1/(z - (s + it)) via `stieltjessquare`. The real and imaginary parts of Stieltjes integrals contain the gradient of the Newtonian potential.
